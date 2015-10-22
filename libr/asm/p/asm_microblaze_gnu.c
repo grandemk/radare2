@@ -53,17 +53,16 @@ static int buf_fprintf(void *stream, const char *format, ...) {
 	return true;
 }
 
-#define TODO 0xdeaddead
 static int disassemble(struct r_asm_t *a, struct r_asm_op_t *op, const ut8 *buf, int len) {
 	static struct disassemble_info disasm_obj;
 	if (len<4) return -1;
 	buf_global = op->buf_asm;
 	Offset = a->pc;
-	memcpy (bytes, buf, 4); // TODO handle thumb
+	memcpy (bytes, buf, 4);
 
 	/* prepare disassembler */
 	memset (&disasm_obj,'\0', sizeof (struct disassemble_info));
-	disasm_obj.arch = TODO;
+	disasm_obj.arch = 0;
 	disasm_obj.buffer = bytes;
 	disasm_obj.read_memory_func = &microblaze_buffer_read_memory;
 	disasm_obj.symbol_at_address_func = &symbol_at_address;
@@ -71,8 +70,7 @@ static int disassemble(struct r_asm_t *a, struct r_asm_op_t *op, const ut8 *buf,
 	disasm_obj.print_address_func = &print_address;
 	disasm_obj.buffer_vma = Offset;
 	disasm_obj.buffer_length = 4;
-	// how do we get the endianess ?
-	disasm_obj.endian = !a->big_endian;
+	disasm_obj.endian = a->big_endian ? BFD_ENDIAN_BIG : BFD_ENDIAN_LITTLE;
 	disasm_obj.fprintf_func = &buf_fprintf;
 	disasm_obj.stream = stdout;
 
