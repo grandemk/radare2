@@ -10,7 +10,6 @@
 #include <r_asm.h>
 
 #include "dis-asm.h"
-#include "opcode/microblaze.h"
 
 static unsigned long Offset = 0;
 static char *buf_global = NULL;
