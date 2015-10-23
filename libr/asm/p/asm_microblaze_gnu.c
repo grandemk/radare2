@@ -54,8 +54,10 @@ static int buf_fprintf(void *stream, const char *format, ...) {
 }
 
 static int disassemble(struct r_asm_t *a, struct r_asm_op_t *op, const ut8 *buf, int len) {
+
 	static struct disassemble_info disasm_obj;
 	if (len<4) return -1;
+
 	buf_global = op->buf_asm;
 	Offset = a->pc;
 	memcpy (bytes, buf, 4);
@@ -70,20 +72,19 @@ static int disassemble(struct r_asm_t *a, struct r_asm_op_t *op, const ut8 *buf,
 	disasm_obj.print_address_func = &print_address;
 	disasm_obj.buffer_vma = Offset;
 	disasm_obj.buffer_length = 4;
-	disasm_obj.endian = a->big_endian ? BFD_ENDIAN_BIG : BFD_ENDIAN_LITTLE;
+	//disasm_obj.endian = a->big_endian ? BFD_ENDIAN_BIG : BFD_ENDIAN_LITTLE;
+    // only support little endian for now
+	disasm_obj.endian = !a->big_endian;
 	disasm_obj.fprintf_func = &buf_fprintf;
 	disasm_obj.stream = stdout;
 
 	op->buf_asm[0] = '\0';
 	op->size = print_insn_microblaze ((bfd_vma)Offset, &disasm_obj);
-	if (op->size == -1)
+	if (op->size == -1) {
 		strncpy (op->buf_asm, " (data)", R_ASM_BUFSIZE);
+        op->size = 4;
+    }
 	return op->size;
-}
-
-static int assemble(RAsm *a, RAsmOp *op, const char *str) {
-	// TODO
-	return -1;
 }
 
 RAsmPlugin r_asm_plugin_microblaze_gnu = {
@@ -95,7 +96,7 @@ RAsmPlugin r_asm_plugin_microblaze_gnu = {
 	.init = NULL,
 	.fini = NULL,
 	.disassemble = &disassemble,
-	.assemble = &assemble,
+	.assemble = NULL
 };
 
 #ifndef CORELIB

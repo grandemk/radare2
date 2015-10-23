@@ -246,17 +246,17 @@ print_insn_microblaze (bfd_vma memaddr, struct disassemble_info * info)
     print_func (stream, ".short 0x%04x", (unsigned int) inst);
   else
     {
-      print_func (stream, "%s", op->name);
+        print_func (stream, "%s", op->name);
 
       switch (op->inst_type)
 	{
         case INST_TYPE_RD_R1_R2:
-          print_func (stream, "\t%s, %s, %s", get_field_rd (inst),
-		   get_field_r1(inst), get_field_r2 (inst));
+            print_func (stream, "\t%s, %s, %s", get_field_rd (inst),
+                    get_field_r1(inst), get_field_r2 (inst));
           break;
         case INST_TYPE_RD_R1_IMM:
-	  print_func (stream, "\t%s, %s, %s", get_field_rd (inst),
-		   get_field_r1(inst), get_field_imm (inst));
+          print_func (stream, "\t%s, %s, %s", get_field_rd (inst),
+                  get_field_r1(inst), get_field_imm (inst));
 	  if (info->print_address_func && get_int_field_r1 (inst) == 0
 	      && info->symbol_at_address_func)
 	    {
